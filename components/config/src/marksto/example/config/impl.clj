@@ -1,4 +1,4 @@
-(ns marksto.example.config.core)
+(ns marksto.example.config.impl)
 
 ;; NB: This should normally use some library to load a system configuration map.
 ;;     However, we keep things simple for demonstration purposes.

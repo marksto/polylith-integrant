@@ -1,4 +1,4 @@
-(ns marksto.example.embedded-pg.core
+(ns marksto.example.embedded-pg.impl
   (:require [clojure.java.io :as io])
   (:import
     (io.zonky.test.db.postgres.embedded EmbeddedPostgres EmbeddedPostgres$Builder)

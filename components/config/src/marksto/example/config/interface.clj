@@ -1,7 +1,7 @@
 (ns marksto.example.config.interface
   "An abstract system configuration as a Polylith component"
-  (:require [marksto.example.config.core :as core]))
+  (:require [marksto.example.config.impl :as impl]))
 
 (defn load-config
   []
-  (core/load-config))
+  (impl/load-config))
