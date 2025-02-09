@@ -2,6 +2,7 @@
   "An abstract system configuration as a Polylith component"
   (:require [marksto.example.config.impl :as impl]))
 
-(defn load-config
-  []
-  (impl/load-config))
+(defn load!
+  "Loads config from a given EDN `file`, narrowing it to a specific `profile`."
+  [file profile]
+  (impl/load! file profile))

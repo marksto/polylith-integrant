@@ -1,9 +1,16 @@
-(ns marksto.example.config.impl)
+(ns marksto.example.config.impl
+  (:refer-clojure :exclude [load])
+  (:require [clojure.java.io :as io]
+            [integrant.core :as ig]))
 
-;; NB: This should normally use some library to load a system configuration map.
-;;     However, we keep things simple for demonstration purposes.
-(defn load-config []
-  {:postgres {:port 54321}
-   :db+creds {:dbname   "postgres"
-              :user     "postgres"
-              :password "postgres"}})
+(defn- read-config [cfg-str]
+  (ig/read-string cfg-str))
+
+(defn- env->lookup-map []
+  (update-keys (System/getenv) symbol))
+
+(defn load! [file profile]
+  (-> (slurp (io/resource file))
+      (read-config)
+      (ig/deprofile [profile])
+      (ig/bind (env->lookup-map))))
