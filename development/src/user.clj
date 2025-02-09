@@ -1,30 +1,48 @@
 (ns user
-  (:require [clojure.tools.logging :as log]
+  (:require [clojure.pprint :as pp]
+            [clojure.tools.logging :as log]
+            [clojure.tools.namespace.repl :refer [set-refresh-dirs]]
             [integrant.core :as ig]
             [integrant.repl :as ir]
             [integrant.repl.state :as ir.state]
 
-            [marksto.example.pg-ops.interface :as pg-ops]
-            [marksto.example.app.core :as base-system]))
+            [marksto.example.app.config :as app-config]
+            [marksto.example.pg-ops.interface :as pg-ops]))
+
+;;;; Global
+
+(println "Loaded root `user.clj` ns\n")
+
+;; NB: No need to refresh the `user.clj` ns, "scripts" or "projects".
+(set-refresh-dirs "bases/app/src" "components/**/src")
+
+
+;;;; System
 
 ;; NB: We use the Integrant-REPL library to follow Reloaded Workflow,
-;;     which is fine for our use case, since we have a single system.
+;;     which is fine for our use case, since we have a single system,
+;;     i.e. a single running base. It can be easily changed later on.
 ;;     See https://github.com/weavejester/integrant-repl for details.
 
-(defn start-base-system!
-  []
-  (let [base-ig-config base-system/default-ig-config]
-    (ig/load-namespaces base-ig-config)
-    (ir/set-prep! #(ig/expand base-ig-config))
-    (ir/go)))
+(defn system []
+  ir.state/system)
 
-(defn stop-base-system!
-  []
+;;
+
+(defn app-ig-config []
+  (let [ig-config (app-config/load!)]
+    (log/info "Starting system with config:\n" (with-out-str (pp/pprint ig-config)))
+    (ig/load-namespaces ig-config)
+    ig-config))
+
+(defn start-app-system! []
+  (ir/set-prep! #(ig/expand (app-ig-config)))
+  (ir/go))
+
+(defn stop-app-system! []
   (ir/halt))
 
-(defn system
-  []
-  ir.state/system)
+
 
 (comment
   ;; 1. Starting a new system
@@ -32,29 +50,29 @@
   ;;    - config:326 - Loading configuration
   ;;    - embedded-pg:326 - Initializing Postgres with config: ...
   ;;    - data_source:326 - Initializing JDBC DataSource
-  (start-base-system!) ;=> :initiated
+  (start-app-system!) ;=> :initiated
 
-  ;; 2. Get the current system in full
-  (system) ;=> #:marksto.example.app{:config ... :embedded-pg ... :data-source ...}
+  ;; 2. Getting the current system in full
+  (system) ;=> #:marksto.example.app.system{:config ... :embedded-pg ... :data-source ...}
 
-  ;; 3. Get a particular component (key)
-  (:marksto.example.app/config (system)) ;=> {:postgres ... :db+creds ...}
+  ;; 3. Getting a particular component (key)
+  (:marksto.example.app.system/config (system)) ;=> {:postgres ... :db+creds ...}
 
-  ;; 4. Check that our code logic works
+  ;; 4. Checking that our code logic works
   ;;    See the logs:
   ;;    - user:326 - PostgreSQL ...
-  (log/info (pg-ops/query-version (:marksto.example.app/data-source (system))))
+  (log/info (pg-ops/query-version (:marksto.example.app.system/data-source (system))))
 
-  ;; 5. Check how a system restart works
+  ;; 5. Restarting the running system
   ;;    See the logs:
   ;;    - data_source:326 - Closing JDBC DataSource
   ;;    - embedded-pg:326 - Halting Postgres
   ;;    - config:326 - Loading configuration
   ;;    - embedded-pg:326 - Initializing Postgres with config: ...
   ;;    - data_source:326 - Initializing JDBC DataSource
-  (start-base-system!) ;=> :initiated
+  (start-app-system!) ;=> :initiated
 
-  ;; 6. Check how to reload source files and restart the system in one go
+  ;; 6. Reloading source files and restarting the system in one go
   ;;    See the logs:
   ;;    - data_source:326 - Closing JDBC DataSource
   ;;    - embedded-pg:326 - Halting Postgres
@@ -68,7 +86,7 @@
   ;;    See the logs:
   ;;    - data_source:326 - Closing JDBC DataSource
   ;;    - embedded-pg:326 - Halting Postgres
-  (stop-base-system!) ;=> :halted
+  (stop-app-system!) ;=> :halted
 
   ;; NB: Since our base starts a new system process (for embedded PostgreSQL)
   ;;     it is recommended to always stop it manually prior to stopping REPL.
