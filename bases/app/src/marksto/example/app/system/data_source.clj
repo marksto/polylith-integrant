@@ -1,35 +1,35 @@
 (ns marksto.example.app.system.data_source
   (:require [clojure.tools.logging :as log]
-            [integrant.core :as ig]
-            [marksto.example.pg-ops.interface :as pg-ops])
-  (:import (com.zaxxer.hikari HikariDataSource)))
+            [integrant.core :as ig])
+  (:import (com.zaxxer.hikari HikariDataSource)
+           (java.sql Connection)))
 
 (defn -conn-pool
   ^HikariDataSource
-  [{:keys [classname
-           subprotocol
-           subname
-           user
-           password]
+  [{:keys [classname subprotocol subname user password]
     :as   db-spec}]
-  (log/info "DB Spec:" db-spec)
+  (log/debug "DB Spec:" db-spec)
   (let [conn-pool (doto (HikariDataSource.)
-                    (.setDriverClassName classname)
-                    (.setJdbcUrl (str "jdbc:" subprotocol ":" subname))
-                    (.setUsername user)
-                    (.setPassword password))]
+                    (HikariDataSource/.setDriverClassName classname)
+                    (HikariDataSource/.setJdbcUrl (str "jdbc:" subprotocol ":" subname))
+                    (HikariDataSource/.setUsername user)
+                    (HikariDataSource/.setPassword password))]
     ;; NB: Initializing the pool and performing a validation check.
-    (.close (.getConnection conn-pool))
+    (Connection/.close (HikariDataSource/.getConnection conn-pool))
     conn-pool))
 
 (defmethod ig/init-key :marksto.example.app.system/data-source
-  [_ config]
+  [_ {:keys [port dbname user password]}]
   (log/info "Initializing JDBC DataSource")
-  (let [db-spec (pg-ops/->db-spec config)]
-    (-conn-pool db-spec)))
+  (let [db-spec {:classname   "org.postgresql.Driver"
+                 :subprotocol "postgresql"
+                 :subname     (format "//localhost:%s/%s" port dbname)
+                 :user        (or user "postgres")
+                 :password    (or password "postgres")}]
+    {:datasource (-conn-pool db-spec)}))
 
 (defmethod ig/halt-key! :marksto.example.app.system/data-source
-  [_ ^HikariDataSource data-source]
+  [_ {:keys [datasource]}]
   (log/info "Closing JDBC DataSource")
-  (when data-source
-    (.close data-source)))
+  (when datasource
+    (HikariDataSource/.close datasource)))

@@ -8,20 +8,21 @@
   ^EmbeddedPostgres$Builder
   [{:keys [port log-file] :as _pg-config}]
   {:pre [(some? port)]}
-  (let [pg-builder (-> (EmbeddedPostgres/builder)
-                       (.setPort port))]
+  (let [pg-builder (EmbeddedPostgres/builder)]
+    (EmbeddedPostgres$Builder/.setPort pg-builder port)
     (when log-file
+      (io/make-parents log-file)
       (let [log-redirector (ProcessBuilder$Redirect/appendTo (io/file log-file))]
         (-> pg-builder
-            (.setOutputRedirector log-redirector)
-            (.setErrorRedirector log-redirector))))
+            (EmbeddedPostgres$Builder/.setOutputRedirector log-redirector)
+            (EmbeddedPostgres$Builder/.setErrorRedirector log-redirector))))
     pg-builder))
 
 (defn start-postgres!
   [pg-config]
-  (.start (->embedded-pg-builder pg-config)))
+  (EmbeddedPostgres$Builder/.start (->embedded-pg-builder pg-config)))
 
 (defn stop-postgres!
   [^EmbeddedPostgres embedded-pg]
   (when embedded-pg
-    (.close embedded-pg)))
+    (EmbeddedPostgres/.close embedded-pg)))
