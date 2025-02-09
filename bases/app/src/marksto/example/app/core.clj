@@ -1,16 +1,16 @@
-(ns marksto.example.system.core
+(ns marksto.example.app.core
   (:require [clojure.pprint :as pp]
             [clojure.tools.logging :as log]
             [integrant.core :as ig]
-            [marksto.example.system.state :as state]))
+            [marksto.example.app.state :as state]))
 
 ;; Integrant System
 
 ;; NB: For our system we follow the Integrant conventions on loading namespaces
 ;;     that contain the system components (a.k.a. keys in Integrant's parlance)
 ;;     named with qualified keywords that match their namespaces. For instance,
-;;     a 'Config' component residing in the `marksto.example.system.config` ns
-;;     obtains the `:marksto.example.system/config` key in the system map.
+;;     a 'Config' component residing in `marksto.example.app.config` namespace
+;;     obtains the `:marksto.example.app/config` key in the system map.
 ;;
 ;;     This approach leverages the uniqueness of Polylith base names and allows
 ;;     us to use a particular Polylith component under classpath-unique keys as
@@ -22,11 +22,11 @@
 ;;     a single workspace/project.
 
 (def default-ig-config
-  {:marksto.example.system/config      {}
-   :marksto.example.system/embedded-pg {:config (ig/ref :marksto.example.system/config)
-                                        #_#_:log-file "path/to/pg-logs-redirection"}
-   :marksto.example.system/data-source {:config   (ig/ref :marksto.example.system/config)
-                                        :postgres (ig/ref :marksto.example.system/embedded-pg)}})
+  {:marksto.example.app/config      {}
+   :marksto.example.app/embedded-pg {:config (ig/ref :marksto.example.app/config)
+                                     #_#_:log-file "path/to/pg-logs-redirection"}
+   :marksto.example.app/data-source {:config   (ig/ref :marksto.example.app/config)
+                                     :postgres (ig/ref :marksto.example.app/embedded-pg)}})
 
 (defn halt-system! []
   (state/stop!)

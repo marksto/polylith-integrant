@@ -1,4 +1,4 @@
-(ns marksto.example.system.state
+(ns marksto.example.app.state
   (:require [clojure.tools.logging :as log]
             [clojure.tools.namespace.repl :as repl]
             [integrant.core :as ig]))

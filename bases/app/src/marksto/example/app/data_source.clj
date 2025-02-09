@@ -1,4 +1,4 @@
-(ns marksto.example.system.data_source
+(ns marksto.example.app.data_source
   (:require [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [marksto.example.pg-ops.interface :as pg-ops])
@@ -22,7 +22,7 @@
     (.close (.getConnection conn-pool))
     conn-pool))
 
-(defmethod ig/init-key :marksto.example.system/data-source
+(defmethod ig/init-key :marksto.example.app/data-source
   [_ {:keys [config]}]
   (log/info "Initializing JDBC DataSource")
   (let [db-spec (-> (:db+creds config)
@@ -30,7 +30,7 @@
                     (pg-ops/->db-spec))]
     (-conn-pool db-spec)))
 
-(defmethod ig/halt-key! :marksto.example.system/data-source
+(defmethod ig/halt-key! :marksto.example.app/data-source
   [_ ^HikariDataSource data-source]
   (log/info "Closing JDBC DataSource")
   (when data-source

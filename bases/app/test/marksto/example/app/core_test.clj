@@ -1,13 +1,13 @@
-(ns marksto.example.system.core-test
+(ns marksto.example.app.core-test
   (:require [clojure.string :as str]
             [clojure.test :refer :all]
             [marksto.example.pg-ops.interface :as pg-ops]
-            [marksto.example.system.core :as system]
-            [marksto.example.system.state :as state]))
+            [marksto.example.app.core :as system]
+            [marksto.example.app.state :as state]))
 
 (defn- get-pg-version
   []
-  (pg-ops/query-version (state/get :marksto.example.system/data-source)))
+  (pg-ops/query-version (state/get :marksto.example.app/data-source)))
 
 (deftest integrant-system-lifecycle
   (comment

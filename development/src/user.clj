@@ -5,7 +5,7 @@
             [integrant.repl.state :as ir.state]
 
             [marksto.example.pg-ops.interface :as pg-ops]
-            [marksto.example.system.core :as base-system]))
+            [marksto.example.app.core :as base-system]))
 
 ;; NB: We use the Integrant-REPL library to follow Reloaded Workflow,
 ;;     which is fine for our use case, since we have a single system.
@@ -35,15 +35,15 @@
   (start-base-system!) ;=> :initiated
 
   ;; 2. Get the current system in full
-  (system) ;=> #:marksto.example.system{:config ... :embedded-pg ... :data-source ...}
+  (system) ;=> #:marksto.example.app{:config ... :embedded-pg ... :data-source ...}
 
   ;; 3. Get a particular component (key)
-  (:marksto.example.system/config (system)) ;=> {:postgres ... :db+creds ...}
+  (:marksto.example.app/config (system)) ;=> {:postgres ... :db+creds ...}
 
   ;; 4. Check that our code logic works
   ;;    See the logs:
   ;;    - user:326 - PostgreSQL ...
-  (log/info (pg-ops/query-version (:marksto.example.system/data-source (system))))
+  (log/info (pg-ops/query-version (:marksto.example.app/data-source (system))))
 
   ;; 5. Check how a system restart works
   ;;    See the logs:
