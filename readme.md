@@ -5,6 +5,23 @@ This example demonstrates a basic setup of a stateful system (implemented as a
 the [Integrant](https://github.com/weavejester/integrant). It caters for both
 in-REPL development and production use cases.
 
+## Prerequisites
+
+The [`poly` tool](https://polylith.gitbook.io/poly) must be installed locally.
+
+The following environment variables are used:
+
+| Env Var           | Required     | Description                                                               |
+|-------------------|--------------|---------------------------------------------------------------------------|
+| `PROFILE`         | in non-local | Environment, e.g. "dev", "prod" (think Leiningen profile, not Polylith)   |
+| `PG_APP_USER`     | in any env   | Existing Postgres user used by the application (not used in tests)        |
+| `PG_APP_PASSWORD` | in any env   | Password of the Postgres user used by the application (not used in tests) |
+
+In a local development environment setting the `PROFILE` var is not necessary,
+since the app config is loaded with the `:dev` param by default in `user.clj`.
+Yet, don't forget to set it in case if you want to run the app via the `-main`
+entrypoint locally.
+
 ## System Components
 
 The most frequently asked system was taken as an illustrative example. It uses

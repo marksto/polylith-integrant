@@ -1,11 +1,13 @@
-{:marksto.example.app.system/embedded-pg
- {:port 54321
-  #_#_:log-file "path/to/pg-logs-redirection"}
+{;; NB: This is an embedded PostgreSQL instance used only for testing.
+ :marksto.example.app.system/embedded-pg
+ {:port     54321
+  :log-file "log/embedded-pg.log"}
 
  :marksto.example.app.system/data-source
- {:embedded-pg #ig/ref :marksto.example.app.system/embedded-pg ; for ordering
+ {;; NB: It must be referenced in order to be initialized beforehand.
+  :embedded-pg #ig/ref :marksto.example.app.system/embedded-pg
 
   :port        54321
+  ;; NB: Using the default Postgres user and database for simplicity.
   :dbname      "postgres"
-  :user        "postgres"
-  :password    "postgres"}}
+  :user        "postgres"}}

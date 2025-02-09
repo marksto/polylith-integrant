@@ -1,5 +1,6 @@
-{:marksto.example.app.system/data-source
- {:port     54321
-  :dbname   "postgres"
-  :user     "postgres"
-  :password "postgres"}}
+{;; NB: This has to match a real PostgreSQL RDBMS launched in the target env.
+ :marksto.example.app.system/data-source
+ {:port     5432
+  :dbname   "example_app_db"
+  :user     #ig/var PG_APP_USER
+  :password #ig/var PG_APP_PASSWORD}}

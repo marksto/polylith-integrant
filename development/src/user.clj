@@ -42,21 +42,20 @@
 (defn stop-app-system! []
   (ir/halt))
 
-
+;;
 
 (comment
   ;; 1. Starting a new system
   ;;    See the logs:
-  ;;    - config:326 - Loading configuration
-  ;;    - embedded-pg:326 - Initializing Postgres with config: ...
+  ;;    - user:326 - Starting system with config: ...
   ;;    - data_source:326 - Initializing JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 2. Getting the current system in full
-  (system) ;=> #:marksto.example.app.system{:config ... :embedded-pg ... :data-source ...}
+  (system) ;=> #:marksto.example.app.system{:data-source ...}
 
   ;; 3. Getting a particular component (key)
-  (def data-source (:marksto.example.app.system/data-source (system))) ;=> #object[...]
+  (def data-source (:marksto.example.app.system/data-source (system)))
 
   ;; 4. Checking that our code logic works
   ;;    See the logs:
@@ -65,30 +64,21 @@
 
   ;; 5. Restarting the running system
   ;;    See the logs:
+  ;;    - user:326 - Starting system with config: ...
   ;;    - data_source:326 - Closing JDBC DataSource
-  ;;    - embedded-pg:326 - Halting Postgres
-  ;;    - config:326 - Loading configuration
-  ;;    - embedded-pg:326 - Initializing Postgres with config: ...
   ;;    - data_source:326 - Initializing JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 6. Reloading source files and restarting the system in one go
   ;;    See the logs:
   ;;    - data_source:326 - Closing JDBC DataSource
-  ;;    - embedded-pg:326 - Halting Postgres
-  ;;    - :reloading (marksto.example.config.core marksto.example.config.interface ... user)
-  ;;    - config:326 - Loading configuration
-  ;;    - embedded-pg:326 - Initializing Postgres with config: ...
+  ;;    - :reloading (marksto.example.app.system.*** marksto.example.app.config marksto.example.app.core)
+  ;;    - user:326 - Starting system with config: ...
   ;;    - data_source:326 - Initializing JDBC DataSource
   (ir/reset) ;=> :resumed
 
   ;; 7. Stopping the running system
   ;;    See the logs:
   ;;    - data_source:326 - Closing JDBC DataSource
-  ;;    - embedded-pg:326 - Halting Postgres
   (stop-app-system!) ;=> :halted
-
-  ;; NB: Since our base starts a new system process (for embedded PostgreSQL)
-  ;;     it is recommended to always stop it manually prior to stopping REPL.
-  ;;     Otherwise, you will have to kill the system process manually.
   .)
