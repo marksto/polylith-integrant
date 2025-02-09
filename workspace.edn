@@ -1,4 +1,4 @@
-{:top-namespace        "integrant"
+{:top-namespace        "marksto.example"
  :interface-ns         "interface"
  :default-profile-name "default"
  :compact-views        #{}
