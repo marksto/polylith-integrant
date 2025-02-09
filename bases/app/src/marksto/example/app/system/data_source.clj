@@ -23,11 +23,9 @@
     conn-pool))
 
 (defmethod ig/init-key :marksto.example.app.system/data-source
-  [_ {:keys [config]}]
+  [_ config]
   (log/info "Initializing JDBC DataSource")
-  (let [db-spec (-> (:db+creds config)
-                    (assoc :port (get-in config [:postgres :port]))
-                    (pg-ops/->db-spec))]
+  (let [db-spec (pg-ops/->db-spec config)]
     (-conn-pool db-spec)))
 
 (defmethod ig/halt-key! :marksto.example.app.system/data-source

@@ -30,7 +30,7 @@
 ;;
 
 (defn app-ig-config []
-  (let [ig-config (app-config/load!)]
+  (let [ig-config (app-config/load! :dev)]
     (log/info "Starting system with config:\n" (with-out-str (pp/pprint ig-config)))
     (ig/load-namespaces ig-config)
     ig-config))
@@ -56,12 +56,12 @@
   (system) ;=> #:marksto.example.app.system{:config ... :embedded-pg ... :data-source ...}
 
   ;; 3. Getting a particular component (key)
-  (:marksto.example.app.system/config (system)) ;=> {:postgres ... :db+creds ...}
+  (def data-source (:marksto.example.app.system/data-source (system))) ;=> #object[...]
 
   ;; 4. Checking that our code logic works
   ;;    See the logs:
   ;;    - user:326 - PostgreSQL ...
-  (log/info (pg-ops/query-version (:marksto.example.app.system/data-source (system))))
+  (log/info (pg-ops/query-version data-source))
 
   ;; 5. Restarting the running system
   ;;    See the logs:

@@ -4,8 +4,8 @@
    For our system we follow the Integrant conventions on loading namespaces
    that contain the system components (a.k.a. keys in Integrant's parlance)
    named with qualified keywords that match their namespaces. For instance,
-   a 'Config' component residing in `marksto.example.app.system.config` ns
-   obtains the `:marksto.example.app.system/config` key in the system map.
+   a 'Server' component residing in `marksto.example.app.system.server` ns
+   obtains the `:marksto.example.app.system/server` key in the system map.
 
    This approach leverages the uniqueness of Polylith base names and allows
    us to use a particular Polylith component under classpath-unique keys as

@@ -1,0 +1,11 @@
+{:marksto.example.app.system/embedded-pg
+ {:port 54321
+  #_#_:log-file "path/to/pg-logs-redirection"}
+
+ :marksto.example.app.system/data-source
+ {:embedded-pg #ig/ref :marksto.example.app.system/embedded-pg ; for ordering
+
+  :port        54321
+  :dbname      "postgres"
+  :user        "postgres"
+  :password    "postgres"}}

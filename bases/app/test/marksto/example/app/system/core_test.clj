@@ -1,15 +1,11 @@
 (ns marksto.example.app.system.core-test
   (:require [clojure.string :as str]
             [clojure.test :refer :all]
-            [integrant.core :as ig]
+            [marksto.example.config.interface :as config]
             [marksto.example.pg-ops.interface :as pg-ops]
             [marksto.example.app.system.core :as sut]))
 
-(def test-ig-config
-  {:marksto.example.app.system/config      {}
-   :marksto.example.app.system/embedded-pg {:config (ig/ref :marksto.example.app.system/config)}
-   :marksto.example.app.system/data-source {:config   (ig/ref :marksto.example.app.system/config)
-                                            :postgres (ig/ref :marksto.example.app.system/embedded-pg)}})
+(def test-ig-config (config/load! "app/test-config.edn" :dev))
 
 (defn- get-pg-version [system-state]
   (pg-ops/query-version
