@@ -97,11 +97,10 @@
                           (str "target/" project ".jar"))]
         (b/copy-dir {:src-dirs   ["src" "resources"]
                      :target-dir class-dir})
-        (b/compile-clj {:basis        basis
-                        :class-dir    class-dir
-                        :ns-compile   [main]
-                        :compile-opts {:direct-linking true}
-                        :bindings     {#'clojure.core/*assert* false}})
+        (b/compile-clj {:basis      basis
+                        :class-dir  class-dir
+                        :ns-compile [main]
+                        :bindings   {#'clojure.core/*assert* false}})
         (b/uber {:basis     basis
                  :class-dir class-dir
                  :uber-file uber-file
