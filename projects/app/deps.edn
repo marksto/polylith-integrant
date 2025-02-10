@@ -18,7 +18,8 @@
 
  :aliases
  {:test
-  {:extra-paths []}
+  {:extra-paths []
+   :extra-deps  {polylith+integrant/embedded-pg {:local/root "../../components/embedded-pg"}}}
 
   :run/test
   {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
