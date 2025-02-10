@@ -43,6 +43,21 @@ The minimal set of system components:
 | Component     | Polylith name | Integrant system key                      | Description                                                                                                                                                                           |
 |---------------|---------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Config        | `config`      | n/a                                       | A regular "stateless" component encapsulating a usual application configuration, which also happens to be an Integrant config map, to keep things simple for this particular example. |
-| Embedded DB   | `embedded-pg` | `:marksto.example.app.system/embedded-pg` | A "stateful" component which should be divided into two parts along the boundary between the component and the Integrant system that merely prepares arguments and calls its methods. |
 | DataSource    | n/a           | `:marksto.example.app.system/data-source` | A "stateful" component which is only required at runtime (to be started and stopped properly), i.e. it (intentionally, although not necessarily) lacks a Polylith counterpart.        |
+| Embedded DB   | `embedded-pg` | `:marksto.example.app.system/embedded-pg` | A "stateful" component which should be divided into two parts along the boundary between the component and the Integrant system that merely prepares arguments and calls its methods. |
 | DB Operations | `pg-ops`      | n/a                                       | A regular "stateless" component whose methods are parametrized by the required system state (e.g. `conn` object with actual DB connection) or its derivatives.                        |
+
+## Optional Components
+
+Also note that the 'Embedded DB' component is only used for testing. Its key is
+only present in the `bases/app/test-resources/app/test-config.edn` config file,
+but not in the `bases/app/resources/app/config.edn` config file. Both files end
+up serving as Integrant config maps used in different contexts, and if some key
+is not present, its namespace (`marksto.example.app.system.embedded-pg` in this
+case) won't get loaded and that component won't make it into the system.
+
+We also make sure to exclude the 'Embedded DB' component's Polylith brick from
+the `app` project, so that it does not end up in the deployable artifact (JAR)
+and, therefore, on the app classpath in any environment other than local. This
+can be checked by running the `clojure -T:build uberjar :project app` and then
+inspecting the contents of the `projects/app/target` dir.
