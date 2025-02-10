@@ -1,20 +1,27 @@
 **/classes
-**/target
-**/out
 **/log
+**/out
+**/target
+**/tmp
 **/.artifacts
 **/.cpcache
 **/.DS_Store
-**/.gradle
 **/.env
+**/.envrc
 
+# Java
 *.jar
 *.class
 
-# Polylith-specific
-/components/**/target
+# Emacs / Cider
+.make_kondo_classpath
+.make_kondo_prep
+.projectile
 
-# User-specific stuff
+# VS Code / Calva
+.calva/output-window/output.calva-repl
+
+# IDEA / Cursive
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
@@ -22,27 +29,13 @@
 .idea/**/statistic.xml
 .idea/dictionaries/**
 .idea/libraries/**
-
-# File-based project format
+.idea/replstate.xml
+*.iml
 *.iws
 *.ipr
 
-# Cursive Clojure plugin
-.idea/replstate.xml
-*.iml
-
-/example/example/**
-artifacts
-projects/**/pom.xml
-
-# nrepl
+# Clojure dev tools
 .nrepl-port
-
-# clojure-lsp
-.lsp/.cache
-
-# clj-kondo
-.clj-kondo/.cache
-
-# Calva VS Code Extension
-.calva/output-window/output.calva-repl
+**/.lsp/.cache
+**/.clj-kondo/.cache
+.eastwood
