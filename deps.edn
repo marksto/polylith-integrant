@@ -1,22 +1,40 @@
-{:aliases {:dev  {:extra-paths ["development/src"
-                                "development/resources"]
+{:aliases
+ {:dev
+  {:extra-paths ["development/src"
+                 "development/resources"]
 
-                  :extra-deps  {polylith+integrant/app                    {:local/root "bases/app"}
-                                polylith+integrant/config                 {:local/root "components/config"}
-                                polylith+integrant/embedded-pg            {:local/root "components/embedded-pg"}
-                                polylith+integrant/pg-ops                 {:local/root "components/pg-ops"}
+   :extra-deps  {;; Bricks
+                 polylith+integrant/app                    {:local/root "bases/app"}
+                 polylith+integrant/config                 {:local/root "components/config"}
+                 polylith+integrant/embedded-pg            {:local/root "components/embedded-pg"}
+                 polylith+integrant/pg-ops                 {:local/root "components/pg-ops"}
 
-                                integrant/repl                            {:mvn/version "0.3.3"}
+                 ;; Clojure
+                 org.clojure/clojure                       {:mvn/version "1.12.0"}
 
-                                org.clojure/clojure                       {:mvn/version "1.12.0"}
-                                org.clojure/tools.logging                 {:mvn/version "1.2.4"}
+                 ;; Logging (Java)
+                 org.apache.logging.log4j/log4j-api        {:mvn/version "2.23.1"}
+                 org.apache.logging.log4j/log4j-core       {:mvn/version "2.23.1"}
+                 org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.23.1"}
 
-                                org.apache.logging.log4j/log4j-api        {:mvn/version "2.23.1"}
-                                org.apache.logging.log4j/log4j-core       {:mvn/version "2.23.1"}
-                                org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.23.1"}}}
+                 ;; Dev Tools
+                 integrant/repl                            {:mvn/version "0.3.3"}}}
 
-           :test {:extra-paths ["bases/app/test"
-                                "bases/app/test-resources"]}
+  :test
+  {:extra-paths ["bases/app/test"
+                 "bases/app/test-resources"]}
 
-           :poly {:main-opts  ["-m" "polylith.clj.core.poly-cli.core"]
-                  :extra-deps {polylith/clj-poly {:mvn/version "0.2.18"}}}}}
+  :run/test
+  {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
+                                                      :git/sha "dfb30dd"}}
+   :main-opts  ["-m" "cognitect.test-runner"]
+   :jvm-opts   ["-Dclojure.main.report=stderr"]
+   :exec-fn    cognitect.test-runner.api/test}
+
+  :scripts
+  {:extra-paths ["build.clj"]}
+
+  :build
+  {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.6"
+                                               :exclusions  [org.slf4j/slf4j-nop]}}
+   :ns-default build}}}
