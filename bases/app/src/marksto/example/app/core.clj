@@ -10,24 +10,29 @@
 ;;     so we don't do much here. For more information, see the article "Killing
 ;;     me softly: Graceful shutdowns in Clojure".
 
-(defn shutdown! []
-  (system/halt!)
+(defn shutdown!
+  [ig-system]
+  (system/halt! ig-system)
   (shutdown-agents))
 
-(defn- add-shutdown-hooks! []
-  (Runtime/.addShutdownHook (Runtime/getRuntime) (Thread. ^Runnable shutdown!)))
+(defn- add-shutdown-hooks!
+  [ig-system]
+  (Runtime/.addShutdownHook
+    (Runtime/getRuntime)
+    (Thread. ^Runnable #(shutdown! ig-system))))
 
 (defn launch! []
-  (add-shutdown-hooks!)
-  (system/init! (config/load!)))
+  (let [ig-config (config/load!)
+        ig-system (system/init! ig-config)]
+    (add-shutdown-hooks! ig-system)
+    ig-system))
 
 ;;
 
 ;; NB: To keep this example app minimalistic we just query the Postgres version.
-(defn do-something! []
-  (let [pg-version (-> (system/get-state)
-                       (get-in [:system :marksto.example.app.system/data-source])
-                       (pg-ops/query-version))]
+(defn do-something!
+  [{:marksto.example.app.system/keys [data-source] :as _ig-system}]
+  (let [pg-version (pg-ops/query-version data-source)]
     (log/info (format "The DBMS version: %s" pg-version))))
 
 ;;
@@ -36,8 +41,7 @@
   ;; NB: Having the top-level `try-catch` block caters for both popular ways of
   ;;     launching the app — via 'clojure.main -m' and via vanilla '-jar' calls.
   (try
-    (launch!)
-    (do-something!)
+    (do-something! (launch!))
     (catch Throwable t
       (log/error t "Failed to launch the app system")
       (System/exit 1))))

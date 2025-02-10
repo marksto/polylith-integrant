@@ -19,32 +19,36 @@
             [integrant.core :as ig]
             [marksto.example.app.system.state :as state]))
 
-(defn halt! []
-  (log/info "Halting the app system...")
-  (state/swap-state! (fn [{:keys [system]}]
-                       (when system (ig/halt! system))
-                       nil))
-  ::halted)
+;; NB: This ns exists solely for the purpose of demonstrative testing.
+;;     It wraps Integrant core `init!`/`halt!` fns to store the state.
+;;     Exposing an Integrant system state should generally be avoided.
+;;     See the `user.clj` on how to deal with the system in REPL.
+
+(defn halt!
+  ([ig-system]
+   (halt! ig-system (keys ig-system)))
+  ([ig-system keys]
+   (log/info "Halting the app system...")
+   (when ig-system
+     (ig/halt! ig-system keys)
+     (log/info "System successfully halted")
+     (state/swap-state! (constantly nil))
+     nil)))
 
 (defn init!
   ([ig-config]
    (init! ig-config (keys ig-config)))
   ([ig-config keys]
    (log/info "Initiating the app system...")
-   (try
-     (when ig-config
-       (ig/load-namespaces ig-config)
-       (log/info "Loaded namespaces")
-       (state/swap-state! (fn [_]
-                            {:system (ig/init ig-config keys)
-                             :config ig-config})))
-     ::initiated
-     (catch Exception ex
-       (halt!)
-       (throw ex)))))
+   (when ig-config
+     (ig/load-namespaces ig-config)
+     (log/info "Loaded namespaces")
+     (let [ig-system (ig/init ig-config keys)]
+       (log/info "System successfully initiated")
+       (state/swap-state! (constantly
+                            {:system ig-system
+                             :config ig-config}))
+       ig-system))))
 
-;; NB: This fn exists solely for the purpose of demonstrative testing.
-;;     Exposing an Integrant system state should generally be avoided.
-;;     See the `user.clj` on how to deal with the system in REPL.
 (defn ^:tests-only get-state []
   @state/*state)

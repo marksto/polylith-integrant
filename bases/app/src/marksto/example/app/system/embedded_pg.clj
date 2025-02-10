@@ -5,12 +5,19 @@
 
 (defmethod ig/init-key :marksto.example.app.system/embedded-pg
   [_ pg-config]
-  (log/info "Initializing Postgres with config:" pg-config)
-  (embedded-pg/start-postgres! pg-config))
+  (log/info "Starting embedded PostgreSQL with config:" pg-config)
+  ;; NB: Integrant itself doesn't have a safety net in case an exception occurs
+  ;;     during components initialization. To avoid partially initialized state,
+  ;;     it is recommended to manually wrap everything in `try-catch` blocks.
+  (try
+    (embedded-pg/start-postgres! pg-config)
+    (catch Exception e
+      (log/error e "Starting embedded PostgreSQL failed"))))
 
 (defmethod ig/halt-key! :marksto.example.app.system/embedded-pg
   [_ embedded-pg]
-  (when embedded-pg
-    (log/info "Halting Postgres")
+  (log/info "Stopping embedded PostgreSQL")
+  (try
     (embedded-pg/stop-postgres! embedded-pg)
-    nil))
+    (catch Exception e
+      (log/error e "Stopping embedded PostgreSQL failed"))))

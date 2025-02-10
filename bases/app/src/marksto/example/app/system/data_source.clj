@@ -16,11 +16,17 @@
 
 (defmethod ig/init-key :marksto.example.app.system/data-source
   [_ ds-config]
-  (log/info "Initializing JDBC DataSource")
-  ;; NB: It wraps the `DataSource` object into a so-called 'db-spec' map used
-  ;;     for getting connections. This isn't required by the `next.jdbc`, but
-  ;;     this may be necessary for other `clojure.java.jdbc`-based tools.
-  {:datasource (-conn-pool ds-config)})
+  (log/info "Making JDBC DataSource")
+  ;; NB: Integrant itself doesn't have a safety net in case an exception occurs
+  ;;     during components initialization. To avoid partially initialized state,
+  ;;     it is recommended to manually wrap everything in `try-catch` blocks.
+  (try
+    ;; NB: It wraps the `DataSource` object into a so-called 'db-spec' map used
+    ;;     for getting connections. This isn't required by the `next.jdbc`, but
+    ;;     this may be necessary for other `clojure.java.jdbc`-based tools.
+    {:datasource (-conn-pool ds-config)}
+    (catch Exception e
+      (log/error e "Making JDBC DataSource failed"))))
 
 (defmethod ig/halt-key! :marksto.example.app.system/data-source
   [_ {:keys [datasource]}]
@@ -28,4 +34,4 @@
   (try
     (HikariDataSource/.close datasource)
     (catch Exception e
-      (log/error e "Closing the JDBC DataSource failed"))))
+      (log/error e "Closing JDBC DataSource failed"))))

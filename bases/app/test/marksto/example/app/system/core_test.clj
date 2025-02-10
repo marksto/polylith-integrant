@@ -8,15 +8,16 @@
 (def test-ig-config (config/load! "app/test-config.edn" :dev))
 
 (defn- get-pg-version [system-state]
-  (pg-ops/query-version
-    (get-in system-state [:system :marksto.example.app.system/data-source])))
+  (-> system-state
+      (get-in [:system :marksto.example.app.system/data-source])
+      (pg-ops/query-version)))
 
 (deftest integrant-system-lifecycle
   (comment
     "Scenario tests the production use of the Integrant system")
 
   (testing "System init succeeds"
-    (is (= ::sut/initiated (sut/init! test-ig-config)))
+    (sut/init! test-ig-config)
     (let [system-state (sut/get-state)]
       (is (map? system-state))
       (is (contains? system-state :system))
@@ -24,12 +25,11 @@
       (is (= test-ig-config (:config system-state)))))
 
   (testing "All system components are initialized and functional"
-    (let [system-state (sut/get-state)
-          pg-version (get-pg-version system-state)]
+    (let [pg-version (get-pg-version (sut/get-state))]
       (is (str/starts-with? pg-version "PostgreSQL 17.0"))))
 
   (testing "System halt succeeds"
-    (is (= ::sut/halted (sut/halt!)))
+    (sut/halt! (:system (sut/get-state)))
     (let [system-state (sut/get-state)]
       (is (nil? system-state))
       (is (thrown? Exception (get-pg-version system-state))))))
