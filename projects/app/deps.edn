@@ -1,17 +1,20 @@
 {:paths ["resources"]
 
  :deps  {;; Bricks
-         polylith+integrant/app                    {:local/root "../../bases/app"}
-         polylith+integrant/config                 {:local/root "../../components/config"}
-         polylith+integrant/pg-ops                 {:local/root "../../components/pg-ops"}
+         polylith+integrant/app                     {:local/root "../../bases/app"}
+         polylith+integrant/config                  {:local/root "../../components/config"}
+         polylith+integrant/pg-ops                  {:local/root "../../components/pg-ops"}
 
          ;; Clojure
-         org.clojure/clojure                       {:mvn/version "1.12.0"}
+         org.clojure/clojure                        {:mvn/version "1.12.0"}
 
          ;; Logging (Java)
-         org.apache.logging.log4j/log4j-api        {:mvn/version "2.24.3"}
-         org.apache.logging.log4j/log4j-core       {:mvn/version "2.24.3"}
-         org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.24.3"}}
+         org.apache.logging.log4j/log4j-api         {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-core        {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-1.2-api     {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-jul         {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-jcl         {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-slf4j2-impl {:mvn/version "2.24.3"}}
 
  :aliases
  {:test
