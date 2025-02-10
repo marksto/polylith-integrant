@@ -4,11 +4,11 @@
 
            ;; Database
            org.postgresql/postgresql         {:mvn/version "42.7.5"}
-           com.zaxxer/HikariCP               {:mvn/version "5.1.0"}
+           com.zaxxer/HikariCP               {:mvn/version "6.2.1"}
            com.github.seancorfield/next.jdbc {:mvn/version "1.3.994"}
 
            ;; Clojure Tools
-           org.clojure/tools.logging         {:mvn/version "1.2.4"}
-           org.clojure/tools.namespace       {:mvn/version "1.3.0"}}
+           org.clojure/tools.logging         {:mvn/version "1.3.0"}
+           org.clojure/tools.namespace       {:mvn/version "1.5.0"}}
  :aliases {:test {:extra-paths ["test" "test-resources"]
                   :extra-deps  {}}}}

@@ -13,12 +13,12 @@
                  org.clojure/clojure                       {:mvn/version "1.12.0"}
 
                  ;; Logging (Java)
-                 org.apache.logging.log4j/log4j-api        {:mvn/version "2.23.1"}
-                 org.apache.logging.log4j/log4j-core       {:mvn/version "2.23.1"}
-                 org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.23.1"}
+                 org.apache.logging.log4j/log4j-api        {:mvn/version "2.24.3"}
+                 org.apache.logging.log4j/log4j-core       {:mvn/version "2.24.3"}
+                 org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.24.3"}
 
                  ;; Dev Tools
-                 integrant/repl                            {:mvn/version "0.3.3"}}}
+                 integrant/repl                            {:mvn/version "0.4.0"}}}
 
   :test
   {:extra-paths ["bases/app/test"
@@ -31,10 +31,12 @@
    :jvm-opts   ["-Dclojure.main.report=stderr"]
    :exec-fn    cognitect.test-runner.api/test}
 
+  ;; NB: This one is required for local development of any scripts (build, bb, etc.).
   :scripts
-  {:extra-paths ["build.clj"]}
+  {:extra-paths ["build.clj"]
+   :extra-deps  {io.github.clojure/tools.build {:mvn/version "0.10.6"
+                                                :exclusions  [org.slf4j/slf4j-nop]}}}
 
   :build
-  {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.6"
-                                               :exclusions  [org.slf4j/slf4j-nop]}}
+  {:deps       {io.github.clojure/tools.build {:mvn/version "0.10.6"}}
    :ns-default build}}}

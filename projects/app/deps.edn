@@ -9,9 +9,9 @@
          org.clojure/clojure                       {:mvn/version "1.12.0"}
 
          ;; Logging (Java)
-         org.apache.logging.log4j/log4j-api        {:mvn/version "2.23.1"}
-         org.apache.logging.log4j/log4j-core       {:mvn/version "2.23.1"}
-         org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.23.1"}}
+         org.apache.logging.log4j/log4j-api        {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-core       {:mvn/version "2.24.3"}
+         org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.24.3"}}
 
  :aliases
  {:test
