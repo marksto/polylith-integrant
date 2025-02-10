@@ -11,11 +11,10 @@ The [`poly` tool](https://polylith.gitbook.io/poly) must be installed locally.
 
 The following environment variables are used:
 
-| Env Var           | Required     | Description                                                               |
-|-------------------|--------------|---------------------------------------------------------------------------|
-| `PROFILE`         | in non-local | Environment, e.g. "dev", "prod" (think Leiningen profile, not Polylith)   |
-| `PG_APP_USER`     | in any env   | Existing Postgres user used by the application (not used in tests)        |
-| `PG_APP_PASSWORD` | in any env   | Password of the Postgres user used by the application (not used in tests) |
+| Env Var           | Required     | Description                                                             |
+|-------------------|--------------|-------------------------------------------------------------------------|
+| `PROFILE`         | in non-local | Environment, e.g. "dev", "prod" (think Leiningen profile, not Polylith) |
+| `DATABASE_URL`    | in any env   | A JDBC URL for PostgreSQL used by the application (not used in tests)   |
 
 In a local development environment setting the `PROFILE` var is not necessary,
 since the app config is loaded with the `:dev` param by default in `user.clj`.

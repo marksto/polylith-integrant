@@ -5,9 +5,9 @@
             [integrant.core :as ig]
             [integrant.repl :as ir]
             [integrant.repl.state :as ir.state]
-
             [marksto.example.app.config :as app-config]
-            [marksto.example.pg-ops.interface :as pg-ops]))
+            [marksto.example.pg-ops.interface :as pg-ops]
+            [next.jdbc.specs :as jdbc.specs]))
 
 ;;;; Global
 
@@ -15,6 +15,13 @@
 
 ;; NB: No need to refresh the `user.clj` ns, "scripts" or "projects".
 (set-refresh-dirs "bases/app/src" "components/**/src")
+
+;; NB: Provides explicit argument checking and better error messages
+;;     for some common mistakes by instrumenting `next.jdbc` API fns.
+(jdbc.specs/instrument)
+
+(defn disable-jdbc-specs []
+  (jdbc.specs/unstrument))
 
 
 ;;;; System

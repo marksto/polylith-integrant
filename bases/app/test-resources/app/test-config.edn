@@ -7,7 +7,8 @@
  {;; NB: It must be referenced in order to be initialized beforehand.
   :embedded-pg #ig/ref :marksto.example.app.system/embedded-pg
 
-  :port        54321
   ;; NB: Using the default Postgres user and database for simplicity.
-  :dbname      "postgres"
-  :user        "postgres"}}
+  :jdbc-url    "jdbc:postgresql://localhost:54321/postgres?user=postgres"
+
+  ;; NB: Add below any other Hikari connection pool options you need.
+  :cp-opts     {:poolName "conn-pool"}}}

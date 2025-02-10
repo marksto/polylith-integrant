@@ -1,4 +1,4 @@
 {:paths   ["src"]
- :deps    {org.clojure/java.jdbc {:mvn/version "0.7.12"}}
+ :deps    {com.github.seancorfield/next.jdbc {:mvn/version "1.3.994"}}
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps  {}}}}

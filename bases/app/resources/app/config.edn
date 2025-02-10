@@ -1,6 +1,7 @@
-{;; NB: This has to match a real PostgreSQL RDBMS launched in the target env.
+{;; NB: It requires a PostgreSQL instance launched in the target env.
  :marksto.example.app.system/data-source
- {:port     5432
-  :dbname   "example_app_db"
-  :user     #ig/var PG_APP_USER
-  :password #ig/var PG_APP_PASSWORD}}
+ {;; NB: Make sure the DB and role for the application already exist.
+  :jdbc-url #ig/var DATABASE_URL
+
+  ;; NB: Add below any other Hikari connection pool options you need.
+  :cp-opts  {:poolName "conn-pool"}}}

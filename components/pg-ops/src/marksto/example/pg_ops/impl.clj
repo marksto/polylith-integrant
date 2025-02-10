@@ -1,8 +1,7 @@
 (ns marksto.example.pg-ops.impl
-  (:require [clojure.java.jdbc :as jdbc]))
+  (:require [next.jdbc :as jdbc]))
 
 (defn query-version
   [conn]
-  (some-> (jdbc/query conn ["SELECT version()"])
-          (first)
+  (some-> (jdbc/execute-one! conn ["SELECT version()"])
           :version))
