@@ -24,8 +24,9 @@
       (is (= test-ig-config (:config system-state)))))
 
   (testing "All system components are initialized and functional"
-    (let [system-state (sut/get-state)]
-      (is (str/starts-with? (get-pg-version system-state) "PostgreSQL"))))
+    (let [system-state (sut/get-state)
+          pg-version (get-pg-version system-state)]
+      (is (str/starts-with? pg-version "PostgreSQL 17.0"))))
 
   (testing "System halt succeeds"
     (is (= ::sut/halted (sut/halt!)))

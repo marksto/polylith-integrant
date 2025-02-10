@@ -1,4 +1,10 @@
 {:paths   ["src"]
- :deps    {io.zonky.test/embedded-postgres {:mvn/version "2.1.0"}}
+ :deps    {io.zonky.test/embedded-postgres                                {:mvn/version "2.1.0"}
+
+           ;; NB: Be sure to use a specific dependency of PostgreSQL binaries (architecture, version).
+           io.zonky.test.postgres/embedded-postgres-binaries-darwin-amd64 {:mvn/version "17.0.0"}
+           #_#_io.zonky.test.postgres/embedded-postgres-binaries-darwin-arm64v8 {:mvn/version "17.0.0"}
+           #_#_io.zonky.test.postgres/embedded-postgres-binaries-windows-amd64  {:mvn/version "17.0.0"}
+           #_#_io.zonky.test.postgres/embedded-postgres-binaries-linux-amd64    {:mvn/version "17.0.0"}}
  :aliases {:test {:extra-paths ["test"]
                   :extra-deps  {}}}}
