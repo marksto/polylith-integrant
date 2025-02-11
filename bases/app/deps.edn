@@ -1,13 +1,15 @@
 {:paths   ["src" "resources"]
  :deps    {;; System Mgmt
-           integrant/integrant               {:mvn/version "0.13.1"}
+           integrant/integrant                 {:mvn/version "0.13.1"}
 
            ;; Database
-           org.postgresql/postgresql         {:mvn/version "42.7.5"}
-           com.zaxxer/HikariCP               {:mvn/version "6.2.1"}
-           com.github.seancorfield/next.jdbc {:mvn/version "1.3.994"}
+           org.postgresql/postgresql           {:mvn/version "42.7.5"}
+           com.zaxxer/HikariCP                 {:mvn/version "6.2.1"}
+           com.github.seancorfield/next.jdbc   {:mvn/version "1.3.994"}
 
-           ;; Clojure Tools
-           org.clojure/tools.logging         {:mvn/version "1.3.0"}}
+           ;; Dev Tools
+           radicalzephyr/clansi                {:mvn/version "1.2.0"}
+           clojure.java-time/clojure.java-time {:mvn/version "1.4.3"}
+           org.clojure/tools.logging           {:mvn/version "1.3.0"}}
  :aliases {:test {:extra-paths ["test" "test-resources"]
                   :extra-deps  {}}}}

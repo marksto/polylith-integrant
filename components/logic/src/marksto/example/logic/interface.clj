@@ -5,7 +5,9 @@
 (defn do-something!
   "Given an app context `ctx`, does something useful.
 
-   Returns a map with the `:pg-version` key mapped to the PostgreSQL version."
-  {:arglists '([{:keys [db] :as ctx}])}
+   Returns a map with the following keys:
+   - `:current-ts` — the current timestamp;
+   - `:pg-version` — the PostgreSQL DBMS version."
+  {:arglists '([{:keys [db ?clock] :as ctx}])}
   [ctx]
   (impl/do-something! ctx))

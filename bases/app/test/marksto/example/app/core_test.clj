@@ -1,6 +1,7 @@
 (ns marksto.example.app.core-test
   (:require [clojure.string :as str]
             [clojure.test :refer [deftest is testing]]
+            [java-time.api :as jt]
             [marksto.example.app.config :as config]
             [marksto.example.app.core :as sut]))
 
@@ -17,6 +18,11 @@
 ;; NB: A dedicated `:test` profile can be used if you see fit.
 (def test-ig-config (config/load! "app/test-config.edn" :dev))
 
+;; NB: Yes, there's a dedicated macro `jt/with-clock` for exactly this
+;;     purpose, but we would like to showcase passing clock downstream
+;;     as a regular parameter to a Polylith component method.
+(def mock-clock (jt/mock-clock (jt/instant)))
+
 (deftest application-logic-test
   (comment
     "Scenario tests the production use of the example application")
@@ -25,8 +31,12 @@
                          (sut/launch! test-ig-config))]
     (try
       (testing "All system components are initialized and functional"
-        (let [app-res (sut/run-app-logic! test-ig-system)]
+        (let [app-res (sut/run-app-logic! test-ig-system {:clock mock-clock})]
           (is (map? app-res))
+
+          (is (contains? app-res :current-ts))
+          (is (= (jt/local-date-time mock-clock) (:current-ts app-res)))
+
           (is (contains? app-res :pg-version))
           (is (str/starts-with? (:pg-version app-res) "PostgreSQL 17.0"))))
 

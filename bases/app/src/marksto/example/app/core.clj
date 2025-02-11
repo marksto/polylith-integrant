@@ -17,7 +17,8 @@
    a single workspace/project.
 
    See the `user.clj` on how to deal with the Integrant system(s) in REPL."
-  (:require [clojure.tools.logging :as log]
+  (:require [clansi.core :refer [style]]
+            [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [marksto.example.app.config :as config]
             [marksto.example.logic.interface :as logic])
@@ -62,21 +63,28 @@
 
 ;;; App Logic
 
+(defn print-results
+  [{:keys [current-ts pg-version] :as _app-res}]
+  (log/info (style (format "Current timestamp: %s" current-ts) :blue))
+  (log/info (style (format "The DBMS version: %s" pg-version) :blue)))
+
 (defn build-app-ctx
-  [{:marksto.example.app.system/keys [db] :as _ig-system}]
+  [{:marksto.example.app.system/keys [db] :as _ig-system} extra-ctx]
   ;; NB: This is the place where one can be creative. All required system state
   ;;     and/or its derivatives can be "injected" here into the app context map
   ;;     to be passed on to the application logic component in a myriad of ways.
   ;;     In a typical web application, the resulting map is then usually merged
   ;;     into an incoming request via a dedicated middleware.
-  {:db db})
+  (merge {:db db} extra-ctx))
 
 (defn run-app-logic!
-  [ig-system]
-  (let [app-ctx (build-app-ctx ig-system)
-        app-res (logic/do-something! app-ctx)]
-    (log/info (format "The DBMS version: %s" (:pg-version app-res)))
-    app-res))
+  ([ig-system]
+   (run-app-logic! ig-system nil))
+  ([ig-system extra-ctx]
+   (let [app-ctx (build-app-ctx ig-system extra-ctx)
+         app-res (logic/do-something! app-ctx)]
+     (print-results app-res)
+     app-res)))
 
 
 ;;; Entrypoint
