@@ -6,7 +6,7 @@
             [integrant.repl :as ir]
             [integrant.repl.state :as ir.state]
             [marksto.example.app.config :as app-config]
-            [marksto.example.pg-ops.interface :as pg-ops]
+            [marksto.example.logic.interface :as logic]
             [next.jdbc.specs :as jdbc.specs]))
 
 ;;;; Global
@@ -55,7 +55,7 @@
   ;; 1. Starting a new system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...
-  ;;    - db:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Making JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 2. Getting the current system in full
@@ -64,16 +64,14 @@
   ;; 3. Getting a particular component (key)
   (def db (:marksto.example.app.system/db (system)))
 
-  ;; 4. Checking that our code logic works
-  ;;    See the logs:
-  ;;    - user:326 - PostgreSQL ...
-  (log/info (pg-ops/query-version db))
+  ;; 4. Checking that our application logic works
+  (logic/do-something! {:db db}) ;=> {:pg-version ...}
 
   ;; 5. Restarting the running system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...
   ;;    - db:326 - Closing JDBC DataSource
-  ;;    - db:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Making JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 6. Reloading source files and restarting the system in one go
@@ -81,7 +79,7 @@
   ;;    - db:326 - Closing JDBC DataSource
   ;;    - :reloading (marksto.example.app.system.*** marksto.example.app.config marksto.example.app.core)
   ;;    - user:326 - Starting system with config: ...
-  ;;    - db:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Making JDBC DataSource
   (ir/reset) ;=> :resumed
 
   ;; 7. Stopping the running system

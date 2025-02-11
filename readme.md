@@ -45,7 +45,7 @@ The minimal set of system components:
 | Config        | `config`      | n/a                                       | A regular "stateless" component encapsulating a usual application configuration, which also happens to be an Integrant config map, to keep things simple for this particular example. |
 | DB DataSource | n/a           | `:marksto.example.app.system/db`          | A "stateful" component which is only required at runtime (to be started and stopped properly), i.e. it (intentionally, although not necessarily) lacks a Polylith counterpart.        |
 | Embedded DB   | `embedded-pg` | `:marksto.example.app.system/embedded-pg` | A "stateful" component which should be divided into two parts along the boundary between the component and the Integrant system that merely prepares arguments and calls its methods. |
-| DB Operations | `pg-ops`      | n/a                                       | A regular "stateless" component whose methods are parametrized by the required system state (e.g. `conn` object with actual DB connection) or its derivatives.                        |
+| App Logic     | `logic`       | n/a                                       | A regular "stateless" component whose methods are parametrized by the app context with the required system state (e.g. `db` object with actual DB DataSource) or its derivatives.     |
 
 ## Optional Components
 

@@ -3,7 +3,7 @@
  :deps  {;; Bricks
          polylith+integrant/app                     {:local/root "../../bases/app"}
          polylith+integrant/config                  {:local/root "../../components/config"}
-         polylith+integrant/pg-ops                  {:local/root "../../components/pg-ops"}
+         polylith+integrant/logic                   {:local/root "../../components/logic"}
 
          ;; Clojure
          org.clojure/clojure                        {:mvn/version "1.12.0"}

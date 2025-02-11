@@ -1,16 +1,15 @@
 (ns marksto.example.app.system.core-test
   (:require [clojure.string :as str]
             [clojure.test :refer :all]
+            [marksto.example.app.system.core :as sut]
             [marksto.example.config.interface :as config]
-            [marksto.example.pg-ops.interface :as pg-ops]
-            [marksto.example.app.system.core :as sut]))
+            [marksto.example.logic.interface :as logic]))
 
 (def test-ig-config (config/load! "app/test-config.edn" :dev))
 
-(defn- get-pg-version [system-state]
-  (-> system-state
-      (get-in [:system :marksto.example.app.system/db])
-      (pg-ops/query-version)))
+(defn- get-pg-version
+  [{{:marksto.example.app.system/keys [db]} :system :as _system-state}]
+  (logic/do-something! {:db db}))
 
 (deftest integrant-system-lifecycle
   (comment
@@ -25,14 +24,14 @@
       (is (= test-ig-config (:config system-state)))))
 
   (testing "All system components are initialized and functional"
-    (let [pg-version (get-pg-version (sut/get-state))]
+    (let [{:keys [pg-version]} (get-pg-version (sut/get-state))]
       (is (str/starts-with? pg-version "PostgreSQL 17.0"))))
 
   (testing "System halt succeeds"
     (sut/halt! (:system (sut/get-state)))
     (let [system-state (sut/get-state)]
       (is (nil? system-state))
-      (is (thrown? Exception (get-pg-version system-state))))))
+      (is (thrown? Throwable (get-pg-version system-state))))))
 
 (comment
   (run-tests)

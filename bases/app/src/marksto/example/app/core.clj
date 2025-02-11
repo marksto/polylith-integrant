@@ -3,7 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [marksto.example.app.config :as config]
             [marksto.example.app.system.core :as system]
-            [marksto.example.pg-ops.interface :as pg-ops])
+            [marksto.example.logic.interface :as logic])
   (:gen-class))
 
 ;; NB: Properly shutting production systems down is full of its own shenanigans,
@@ -21,19 +21,29 @@
     (Runtime/getRuntime)
     (Thread. ^Runnable #(shutdown! ig-system))))
 
-(defn launch! []
-  (let [ig-config (config/load!)
-        ig-system (system/init! ig-config)]
+(defn launch!
+  [ig-config]
+  (let [ig-system (system/init! ig-config)]
     (add-shutdown-hooks! ig-system)
     ig-system))
 
 ;;
 
-;; NB: To keep this example app minimalistic we just query the Postgres version.
-(defn do-something!
+(defn build-app-ctx
   [{:marksto.example.app.system/keys [db] :as _ig-system}]
-  (let [pg-version (pg-ops/query-version db)]
-    (log/info (format "The DBMS version: %s" pg-version))))
+  ;; NB: This is the place where one can be creative. All required system state
+  ;;     and/or its derivatives can be "injected" here into the app context map
+  ;;     to be passed on to the application logic component in a myriad of ways.
+  ;;     In a typical web application, the resulting map is then usually merged
+  ;;     into an incoming request via a dedicated middleware.
+  {:db db})
+
+(defn run-app-logic!
+  [ig-system]
+  (let [app-ctx (build-app-ctx ig-system)
+        app-res (logic/do-something! app-ctx)]
+    (log/info (format "The DBMS version: %s" (:pg-version app-res)))
+    app-res))
 
 ;;
 
@@ -41,7 +51,9 @@
   ;; NB: Having the top-level `try-catch` block caters for both popular ways of
   ;;     launching the app — via 'clojure.main -m' and via vanilla '-jar' calls.
   (try
-    (do-something! (launch!))
+    (-> (config/load!)
+        (launch!)
+        (run-app-logic!))
     (catch Throwable t
       (log/error t "Failed to launch the app system")
       (System/exit 1))))
