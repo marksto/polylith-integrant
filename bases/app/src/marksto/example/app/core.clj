@@ -11,15 +11,16 @@
 ;;     me softly: Graceful shutdowns in Clojure".
 
 (defn shutdown!
-  [ig-system]
+  [ig-system shutdown-agents?]
   (system/halt! ig-system)
-  (shutdown-agents))
+  (when shutdown-agents?
+    (shutdown-agents)))
 
 (defn- add-shutdown-hooks!
   [ig-system]
   (Runtime/.addShutdownHook
     (Runtime/getRuntime)
-    (Thread. ^Runnable #(shutdown! ig-system))))
+    (Thread. ^Runnable #(shutdown! ig-system true))))
 
 (defn launch!
   [ig-config]

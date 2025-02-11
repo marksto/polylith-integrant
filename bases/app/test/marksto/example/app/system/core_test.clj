@@ -1,38 +1,55 @@
 (ns marksto.example.app.system.core-test
-  (:require [clojure.string :as str]
-            [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is testing use-fixtures]]
+            [integrant.core :as ig]
             [marksto.example.app.system.core :as sut]
-            [marksto.example.config.interface :as config]
-            [marksto.example.logic.interface :as logic]))
+            [marksto.example.app.system.test-utils :as tu]
+            [marksto.example.config.interface :as config]))
 
+(defn with-integrant-methods-spy [f]
+  (with-redefs [sut/load-namespaces tu/load-namespaces-and-spy-methods]
+    (f)))
+
+(use-fixtures :once with-integrant-methods-spy)
+
+;;
+
+;; NB: A dedicated `:test` profile can be used if you see fit.
 (def test-ig-config (config/load! "app/test-config.edn" :dev))
 
-(defn- get-pg-version
-  [{{:marksto.example.app.system/keys [db]} :system :as _system-state}]
-  (logic/do-something! {:db db}))
-
-(deftest integrant-system-lifecycle
+(deftest integrant-system-lifecycle-test
   (comment
     "Scenario tests the production use of the Integrant system")
 
   (testing "System init succeeds"
     (sut/init! test-ig-config)
-    (let [system-state (sut/get-state)]
-      (is (map? system-state))
-      (is (contains? system-state :system))
-      (is (contains? system-state :config))
-      (is (= test-ig-config (:config system-state)))))
 
-  (testing "All system components are initialized and functional"
-    (let [{:keys [pg-version]} (get-pg-version (sut/get-state))]
-      (is (str/starts-with? pg-version "PostgreSQL 17.0"))))
+    (let [system-state (sut/get-state)
+          ig-init-key-calls (tu/all-method-calls ig/init-key)]
+      (is (map? system-state)
+          "The system is initiated without any exceptions")
+      (is (= test-ig-config (:config system-state))
+          "The system is initiated with the test config")
+      (is (= #{:marksto.example.app.system/embedded-pg
+               :marksto.example.app.system/db}
+             (set (keys (:system system-state))))
+          "All system components should be initiated")
+      (is (= [:marksto.example.app.system/embedded-pg
+              :marksto.example.app.system/db]
+             (map (comp first :args) ig-init-key-calls))
+          "The system components should be initiated in the correct order")))
 
   (testing "System halt succeeds"
     (sut/halt! (:system (sut/get-state)))
-    (let [system-state (sut/get-state)]
-      (is (nil? system-state))
-      (is (thrown? Throwable (get-pg-version system-state))))))
+
+    (let [system-state (sut/get-state)
+          ig-halt-key!-calls (tu/all-method-calls ig/halt-key!)]
+      (is (nil? system-state)
+          "The system is halted without any exceptions")
+      (is (= [:marksto.example.app.system/db
+              :marksto.example.app.system/embedded-pg]
+             (map (comp first :args) ig-halt-key!-calls))
+          "All system components should be halted in reverse order"))))
 
 (comment
-  (run-tests)
+  (clojure.test/run-tests)
   .)

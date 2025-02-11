@@ -24,6 +24,13 @@
 ;;     Exposing an Integrant system state should generally be avoided.
 ;;     See the `user.clj` on how to deal with the system in REPL.
 
+(defn ^:tests-only get-state []
+  @state/*state)
+
+(defn ^:tests-only load-namespaces
+  [ig-config keys]
+  (ig/load-namespaces ig-config keys))
+
 (defn halt!
   ([ig-system]
    (halt! ig-system (keys ig-system)))
@@ -41,7 +48,7 @@
   ([ig-config keys]
    (log/info "Initiating the app system...")
    (when ig-config
-     (ig/load-namespaces ig-config)
+     (load-namespaces ig-config keys)
      (log/info "Loaded namespaces")
      (let [ig-system (ig/init ig-config keys)]
        (log/info "System successfully initiated")
@@ -49,6 +56,3 @@
                             {:system ig-system
                              :config ig-config}))
        ig-system))))
-
-(defn ^:tests-only get-state []
-  @state/*state)

@@ -1,6 +1,39 @@
 (ns marksto.example.app.core-test
-  (:require [clojure.test :as test :refer :all]
-            [marksto.example.app.core :as sut]))
+  (:require [clojure.string :as str]
+            [clojure.test :refer [deftest is testing]]
+            [marksto.example.app.core :as sut]
+            [marksto.example.config.interface :as config]))
 
-(deftest dummy-test
-  (is (= 1 1)))
+;; NB: Here we intentionally test against individual app core functions,
+;;     since otherwise the OS processes that are spawned by an embedded
+;;     PostgreSQL will remain hanging due to the fact that the shutdown
+;;     sequence cannot be triggered by a test runner.
+;;
+;;     Normally, this is circumvented by wrapping the embedded Postgres
+;;     into a `:once` test fixture that starts and stops itself for you.
+;;     However, here we want to consider using it as a system component,
+;;     and therefore we have to take care of the system shutdown.
+
+;; NB: A dedicated `:test` profile can be used if you see fit.
+(def test-ig-config (config/load! "app/test-config.edn" :dev))
+
+(deftest application-logic-test
+  (comment
+    "Scenario tests the production use of the example application")
+
+  (let [test-ig-system (testing "The app is successfully launched"
+                         (sut/launch! test-ig-config))]
+    (try
+      (testing "All system components are initialized and functional"
+        (let [app-res (sut/run-app-logic! test-ig-system)]
+          (is (map? app-res))
+          (is (contains? app-res :pg-version))
+          (is (str/starts-with? (:pg-version app-res) "PostgreSQL 17.0"))))
+
+      (finally
+        (testing "The app is successfully shutdown"
+          (sut/shutdown! test-ig-system false))))))
+
+(comment
+  (clojure.test/run-tests)
+  .)
