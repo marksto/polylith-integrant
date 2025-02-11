@@ -3,7 +3,7 @@
  {:port     54321
   :log-file "log/embedded-pg.log"}
 
- :marksto.example.app.system/data-source
+ :marksto.example.app.system/db
  {;; NB: It must be referenced in order to be initialized beforehand.
   :embedded-pg #ig/ref :marksto.example.app.system/embedded-pg
 

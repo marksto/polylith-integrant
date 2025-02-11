@@ -1,5 +1,5 @@
 {;; NB: It requires a PostgreSQL instance launched in the target env.
- :marksto.example.app.system/data-source
+ :marksto.example.app.system/db
  {;; NB: Make sure the DB and role for the application already exist.
   :jdbc-url #ig/var DATABASE_URL
 

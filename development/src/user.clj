@@ -55,37 +55,37 @@
   ;; 1. Starting a new system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...
-  ;;    - data_source:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Initializing JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 2. Getting the current system in full
-  (system) ;=> #:marksto.example.app.system{:data-source ...}
+  (system) ;=> #:marksto.example.app.system{:db ...}
 
   ;; 3. Getting a particular component (key)
-  (def data-source (:marksto.example.app.system/data-source (system)))
+  (def db (:marksto.example.app.system/db (system)))
 
   ;; 4. Checking that our code logic works
   ;;    See the logs:
   ;;    - user:326 - PostgreSQL ...
-  (log/info (pg-ops/query-version data-source))
+  (log/info (pg-ops/query-version db))
 
   ;; 5. Restarting the running system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...
-  ;;    - data_source:326 - Closing JDBC DataSource
-  ;;    - data_source:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Closing JDBC DataSource
+  ;;    - db:326 - Initializing JDBC DataSource
   (start-app-system!) ;=> :initiated
 
   ;; 6. Reloading source files and restarting the system in one go
   ;;    See the logs:
-  ;;    - data_source:326 - Closing JDBC DataSource
+  ;;    - db:326 - Closing JDBC DataSource
   ;;    - :reloading (marksto.example.app.system.*** marksto.example.app.config marksto.example.app.core)
   ;;    - user:326 - Starting system with config: ...
-  ;;    - data_source:326 - Initializing JDBC DataSource
+  ;;    - db:326 - Initializing JDBC DataSource
   (ir/reset) ;=> :resumed
 
   ;; 7. Stopping the running system
   ;;    See the logs:
-  ;;    - data_source:326 - Closing JDBC DataSource
+  ;;    - db:326 - Closing JDBC DataSource
   (stop-app-system!) ;=> :halted
   .)

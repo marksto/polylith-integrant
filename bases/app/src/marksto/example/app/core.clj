@@ -31,8 +31,8 @@
 
 ;; NB: To keep this example app minimalistic we just query the Postgres version.
 (defn do-something!
-  [{:marksto.example.app.system/keys [data-source] :as _ig-system}]
-  (let [pg-version (pg-ops/query-version data-source)]
+  [{:marksto.example.app.system/keys [db] :as _ig-system}]
+  (let [pg-version (pg-ops/query-version db)]
     (log/info (format "The DBMS version: %s" pg-version))))
 
 ;;

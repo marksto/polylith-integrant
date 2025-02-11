@@ -9,7 +9,7 @@
 
 (defn- get-pg-version [system-state]
   (-> system-state
-      (get-in [:system :marksto.example.app.system/data-source])
+      (get-in [:system :marksto.example.app.system/db])
       (pg-ops/query-version)))
 
 (deftest integrant-system-lifecycle

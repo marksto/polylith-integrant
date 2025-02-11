@@ -1,4 +1,4 @@
-(ns marksto.example.app.system.data_source
+(ns marksto.example.app.system.db
   (:require [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [next.jdbc :as jdbc]
@@ -14,7 +14,7 @@
     (Connection/.close (jdbc/get-connection conn-pool))
     conn-pool))
 
-(defmethod ig/init-key :marksto.example.app.system/data-source
+(defmethod ig/init-key :marksto.example.app.system/db
   [_ ds-config]
   (log/info "Making JDBC DataSource")
   ;; NB: Integrant itself doesn't have a safety net in case an exception occurs
@@ -28,7 +28,7 @@
     (catch Exception e
       (log/error e "Making JDBC DataSource failed"))))
 
-(defmethod ig/halt-key! :marksto.example.app.system/data-source
+(defmethod ig/halt-key! :marksto.example.app.system/db
   [_ {:keys [datasource]}]
   (log/info "Closing JDBC DataSource")
   (try
