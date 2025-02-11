@@ -9,4 +9,6 @@
   ([]
    (load! (get-profile)))
   ([profile]
-   (config/load! "app/config.edn" profile)))
+   (load! "app/config.edn" profile))
+  ([file profile]
+   (config/load! file profile)))

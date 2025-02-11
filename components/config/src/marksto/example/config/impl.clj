@@ -3,6 +3,10 @@
   (:require [clojure.java.io :as io]
             [integrant.core :as ig]))
 
+;; NB: In a more realistic use case, the configuration is loaded in 2 stages:
+;;     1. Read the entire content of the file using something smarter (Aero);
+;;     2. Remove all non-component keys from the map to keep Integrant happy.
+
 (defn- read-config [cfg-str]
   (ig/read-string cfg-str))
 

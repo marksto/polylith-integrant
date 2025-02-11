@@ -1,9 +1,9 @@
 (ns marksto.example.app.system.core-test
   (:require [clojure.test :refer [deftest is testing use-fixtures]]
             [integrant.core :as ig]
+            [marksto.example.app.config :as config]
             [marksto.example.app.system.core :as sut]
-            [marksto.example.app.system.test-utils :as tu]
-            [marksto.example.config.interface :as config]))
+            [marksto.example.app.system.test-utils :as tu]))
 
 (defn with-integrant-methods-spy [f]
   (with-redefs [sut/load-namespaces tu/load-namespaces-and-spy-methods]

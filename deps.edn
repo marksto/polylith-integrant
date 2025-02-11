@@ -27,6 +27,7 @@
   {:extra-paths ["bases/app/test"
                  "bases/app/test-resources"
                  "components/config/test"
+                 "components/config/test-resources"
                  "components/embedded-pg/test"
                  "components/logic/test"]}
 

@@ -1,4 +1,4 @@
-{:paths   ["src" "resources"]
+{:paths   ["src"]
  :deps    {integrant/integrant {:mvn/version "0.13.1"}}
- :aliases {:test {:extra-paths ["test"]
+ :aliases {:test {:extra-paths ["test" "test-resources"]
                   :extra-deps  {}}}}

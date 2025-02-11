@@ -1,8 +1,8 @@
 (ns marksto.example.app.core-test
   (:require [clojure.string :as str]
             [clojure.test :refer [deftest is testing]]
-            [marksto.example.app.core :as sut]
-            [marksto.example.config.interface :as config]))
+            [marksto.example.app.config :as config]
+            [marksto.example.app.core :as sut]))
 
 ;; NB: Here we intentionally test against individual app core functions,
 ;;     since otherwise the OS processes that are spawned by an embedded

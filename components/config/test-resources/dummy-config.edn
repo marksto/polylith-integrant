@@ -1,0 +1,4 @@
+{:alpha   2025
+ :bravo   #ig/var JAVA_HOME
+ :charlie #ig/profile {:one "Option for the profile `:one`"
+                       :two "Option for the profile `:two`"}}
