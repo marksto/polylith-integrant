@@ -1,10 +1,29 @@
 (ns marksto.example.app.core
-  "Base API of an example app"
+  "Base API of the example application.
+
+   For our system we follow the Integrant conventions on loading namespaces
+   that contain the system components (a.k.a. keys in Integrant's parlance)
+   named with qualified keywords that match their namespaces. For instance,
+   a 'DB (DataSource)' component resides in `marksto.example.app.system.db`
+   ns and obtains the `:marksto.example.app.system/db` key in a system map.
+
+   This approach leverages the uniqueness of Polylith base names and allows
+   us to use a particular Polylith component under classpath-unique keys as
+   part of multiple Integrant systems/bases.
+
+   Another option is to use an arbitrary key, e.g. `:app/config`, though it
+   may lead to naming collisions and overwriting of multi-methods' dispatch
+   values in case if you plan to run multiple Integrant systems together in
+   a single workspace/project.
+
+   See the `user.clj` on how to deal with the Integrant system(s) in REPL."
   (:require [clojure.tools.logging :as log]
+            [integrant.core :as ig]
             [marksto.example.app.config :as config]
-            [marksto.example.app.system.core :as system]
             [marksto.example.logic.interface :as logic])
   (:gen-class))
+
+;;; State Mgmt
 
 ;; NB: Properly shutting production systems down is full of its own shenanigans,
 ;;     so we don't do much here. For more information, see the article "Killing
@@ -12,7 +31,11 @@
 
 (defn shutdown!
   [ig-system shutdown-agents?]
-  (system/halt! ig-system)
+  (log/info "Halting the app system...")
+
+  (ig/halt! ig-system)
+  (log/info "System successfully halted")
+
   (when shutdown-agents?
     (shutdown-agents)))
 
@@ -24,11 +47,20 @@
 
 (defn launch!
   [ig-config]
-  (let [ig-system (system/init! ig-config)]
+  (log/info "Launching the app system...")
+
+  (ig/load-namespaces ig-config)
+  (log/info "Loaded component namespaces")
+
+  (let [ig-system (ig/init ig-config)]
+    (log/info "System successfully initiated")
+
     (add-shutdown-hooks! ig-system)
+
     ig-system))
 
-;;
+
+;;; App Logic
 
 (defn build-app-ctx
   [{:marksto.example.app.system/keys [db] :as _ig-system}]
@@ -46,7 +78,8 @@
     (log/info (format "The DBMS version: %s" (:pg-version app-res)))
     app-res))
 
-;;
+
+;;; Entrypoint
 
 (defn -main [& _]
   ;; NB: Having the top-level `try-catch` block caters for both popular ways of
@@ -56,5 +89,5 @@
         (launch!)
         (run-app-logic!))
     (catch Throwable t
-      (log/error t "Failed to launch the app system")
+      (log/error t "The example application failed")
       (System/exit 1))))
