@@ -6,7 +6,7 @@
             [integrant.repl :as ir]
             [integrant.repl.state :as ir.state]
             [marksto.example.app.config :as app-config]
-            [marksto.example.logic.interface :as logic]
+            [marksto.example.app.logic.core :as app-logic]
             [next.jdbc.specs :as jdbc.specs]))
 
 ;;;; Global
@@ -88,12 +88,12 @@
 
 ;;;; App Logic
 
-(defn check-out! []
-  (let [db (:marksto.example.app.system/db (system))]
-    (logic/do-something! {:system {:db db}
-                          :supply (constantly "Hello!")})))
+(defn run-app-logic!
+  [& [extra-ctx]]
+  (app-logic/run-app! (system) extra-ctx))
 
 (comment
   ;; Checking that our application logic works
-  (check-out!) ;=> {:current-ts ... :pg-version ... :supplement "Hello!"}
+  (run-app-logic!)
+  (run-app-logic! {:supply (constantly "Hello!")})
   .)
