@@ -35,13 +35,6 @@
                  "components/supplier/test"
                  "components/timepiece/test"]}
 
-  :run/test
-  {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
-                                                      :git/sha "dfb30dd"}}
-   :main-opts  ["-m" "cognitect.test-runner"]
-   :jvm-opts   ["-Dclojure.main.report=stderr"]
-   :exec-fn    cognitect.test-runner.api/test}
-
   ;; NB: This one is required for local development of any scripts (build, bb, etc.).
   :scripts
   {:extra-paths ["build.clj"]

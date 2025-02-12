@@ -52,6 +52,8 @@
 ;;
 
 (comment
+  ;; NB: Make sure that you have started a local Postgres server.
+
   ;; 1. Starting a new system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...

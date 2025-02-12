@@ -4,7 +4,7 @@
    For our system we follow the Integrant conventions on loading namespaces
    that contain the system components (a.k.a. keys in Integrant's parlance)
    named with qualified keywords that match their namespaces. For instance,
-   a 'DB (DataSource)' component resides in `marksto.example.app.system.db`
+   a 'DB DataSource' component resides in a `marksto.example.app.system.db`
    ns and obtains the `:marksto.example.app.system/db` key in a system map.
 
    This approach leverages the uniqueness of Polylith base names and allows
@@ -88,5 +88,5 @@
         (launch!)
         (run-app-logic!))
     (catch Throwable t
-      (log/error t "The example application failed")
+      (log/error (style (format "The example application failed:\n%s" (pr-str t)) :red))
       (System/exit 1))))

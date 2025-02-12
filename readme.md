@@ -5,9 +5,35 @@ This example demonstrates a basic setup of a stateful system (implemented as a
 the [Integrant](https://github.com/weavejester/integrant). It caters for both
 in-REPL development and production use cases.
 
+It also attempts to address some of the most frequently asked questions about
+system design in this particular setting, namely:
+
+- What goes where? What's in the `base`? What can/should be a component?
+- What should (not) go into the Integrant system? (IMHO, only stateful objects.)
+- How do Integrant components (keys) map to their Polylith counterparts, if any?
+- How to deal with configuration, application context and dependency injection?
+- How to ensure that everything is testable, both in isolation and as a system?
+
+
 ## Prerequisites
 
 The [`poly` tool](https://polylith.gitbook.io/poly) must be installed locally.
+
+### PostgreSQL
+
+There are two separate instances of Postgres used in this example application:
+
+1. The one that is used in the target environment, i.e. locally and elsewhere.
+   For [local exploration and development](#in-repl), make sure that you have
+   launched a local PostgreSQL server (in your favourite way) and have created
+   a database and, optionally, a user role for the app before starting the app
+   system.
+
+2. An embedded PostgreSQL used for [testing](#testing). This one gets launched
+   by the test Integrant system, which is therefore located in the `test` dir
+   of the `app` base, in order to demonstrate an optional Integrant component.
+
+### Env Vars
 
 The following environment variables are used:
 
@@ -21,11 +47,10 @@ since the app config is loaded with the `:dev` param by default in `user.clj`.
 Still, don't forget to set it in case if you want to [launch](#launching) the
 app via the `-main` entrypoint locally.
 
+
 ## System Components
 
-The most frequently asked system was taken as an illustrative example. It uses
-several single-purpose components to work with a traditional database, in this
-case PostgreSQL.
+An example application employs several single-purpose components to do its job.
 
 Unfortunately, the term "component" becomes overloaded in the current context.
 It can both mean a Polylith component (a type of brick) and an Integrant system
@@ -37,8 +62,6 @@ By "stateful" we mean components that are part of the Integrant system (used at
 runtime) and that may also have Polylith counterparts (used at build time). And
 by "stateless" we mean regular Polylith components that do not become a part of
 the Integrant system's state.
-
-The minimal set of system components:
 
 | Component     | Polylith name | Integrant system key                      | Description                                                                                                                                                                           |
 |---------------|---------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -64,20 +87,50 @@ and, therefore, on the app classpath in any environment other than local. This
 can be checked by [building](#building) the app and inspecting the contents of
 the `projects/app/target` dir.
 
+
 ## Trying Out the App
 
 The procedure is straightforward and standard to any other Polylith workspace.
 
+### In REPL
+
+The `development/src/user.clj` ns gets loaded by default. Feel free to open it
+and explore its contents.
+
+Make sure that you start your REPL server with `:dev:test` aliases.
+
 ### Testing
+
+Prior to running tests, please, make sure that you use a specific dependency of
+the embedded PostgreSQL binaries (OS/architecture, version) by checking out and
+modifying the `components/embedded-pg/deps.edn`, if necessary.
+
+> ⚠️ The embedded PostgreSQL was used for "historical reasons" to avoid having
+> Docker and Testcontainers from the get-go. However, it is known that it won't
+> work well in some environments such as NixOS. This can be changed later.
+
+Run a suite of tests with the `poly` tool:
 
 ```shell
 poly test
 ```
 
-NB: Be sure to use a specific dependency of PostgreSQL binaries (architecture,
-version) by checking and modifying the `components/embedded-pg/deps.edn` file.
+Or run a particular test ns in REPL, e.g.:
+
+```clojure
+(in-ns 'marksto.example.app.core-test)
+
+;; Load the ns into your REPL
+
+(clojure.test/run-tests)
+```
 
 ### Building
+
+As of now, this workspace contains a single `build.clj` script in the root dir.
+
+> ❕ There is also a `:scripts` alias for local development of any scripts, e.g.
+> `build.clj`, Babashka tasks, etc.
 
 ```shell
 clojure -T:build uberjar :project app
@@ -85,6 +138,17 @@ clojure -T:build uberjar :project app
 
 ### Launching
 
+Launching the `app` project without building it in advance:
+
 ```shell
-PROFILE="..." DATABASE_URL="..." java -jar projects/app/target/example-app-standalone.jar
+cd projects/app && PROFILE="..." DATABASE_URL="..." clojure -M:run-main
 ```
+
+Launching the uberjar after it [has been built](#building):
+
+```shell
+cd projects/app && PROFILE="..." DATABASE_URL="..." java -jar target/example-app-standalone.jar
+```
+
+Again, make sure that you have started a local Postgres server and created a DB
+and, optionally, a user role for the app beforehand.
