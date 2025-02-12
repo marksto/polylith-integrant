@@ -21,7 +21,8 @@
             [clojure.tools.logging :as log]
             [integrant.core :as ig]
             [marksto.example.app.config :as config]
-            [marksto.example.logic.interface :as logic])
+            [marksto.example.logic.interface :as logic]
+            [marksto.example.supplier.interface :as supplier])
   (:gen-class))
 
 ;;; State Mgmt
@@ -64,18 +65,25 @@
 ;;; App Logic
 
 (defn print-results
-  [{:keys [current-ts pg-version] :as _app-res}]
+  [{:keys [current-ts pg-version supplement] :as _app-res}]
   (log/info (style (format "Current timestamp: %s" current-ts) :blue))
-  (log/info (style (format "The DBMS version: %s" pg-version) :blue)))
+  (log/info (style (format "The RDBMS version: %s" pg-version) :blue))
+  (log/info (style (format "The supplement is: %s" supplement) :blue)))
 
 (defn build-app-ctx
-  [{:marksto.example.app.system/keys [db] :as _ig-system} extra-ctx]
+  [ig-system extra-ctx]
   ;; NB: This is the place where one can be creative. All required system state
   ;;     and/or its derivatives can be "injected" here into the app context map
   ;;     to be passed on to the application logic component in a myriad of ways.
   ;;     In a typical web application, the resulting map is then usually merged
   ;;     into an incoming request via a dedicated middleware.
-  (merge {:db db} extra-ctx))
+  (merge {:system (update-keys ig-system #(keyword (name %)))
+          :supply (fn [qty]
+                    (let [thing (supplier/rand-thing)]
+                      {:thing    thing
+                       :quantity qty
+                       :samples  (supplier/supply-many thing qty)}))}
+         extra-ctx))
 
 (defn run-app-logic!
   ([ig-system]

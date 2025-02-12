@@ -3,7 +3,8 @@
             [clojure.test :refer [deftest is testing]]
             [java-time.api :as jt]
             [marksto.example.app.config :as config]
-            [marksto.example.app.core :as sut]))
+            [marksto.example.app.core :as sut]
+            [marksto.example.supplier.interface :as supplier]))
 
 ;; NB: Here we intentionally test against individual app core functions,
 ;;     since otherwise the OS processes that are spawned by an embedded
@@ -23,6 +24,13 @@
 ;;     as a regular parameter to a Polylith component method.
 (def mock-clock (jt/mock-clock (jt/instant)))
 
+;; NB: Stubbing a particular Polylith component method via indirection.
+(def someone (supplier/supply-one :person))
+(defn stubbed-supply [& [_qty]]
+  {:thing    :person
+   :quantity 1
+   :samples  [someone]})
+
 (deftest application-logic-test
   (comment
     "Scenario tests the production use of the example application")
@@ -31,14 +39,16 @@
                          (sut/launch! test-ig-config))]
     (try
       (testing "All system components are initialized and functional"
-        (let [app-res (sut/run-app-logic! test-ig-system {:clock mock-clock})]
+        (let [extra-ctx {:clock  mock-clock
+                         :supply stubbed-supply}
+              app-res (sut/run-app-logic! test-ig-system extra-ctx)]
           (is (map? app-res))
-
-          (is (contains? app-res :current-ts))
-          (is (= (jt/local-date-time mock-clock) (:current-ts app-res)))
-
-          (is (contains? app-res :pg-version))
-          (is (str/starts-with? (:pg-version app-res) "PostgreSQL 17.0"))))
+          (is (= (jt/local-date-time mock-clock) (:current-ts app-res))
+              "A current timestamp specified by a `mock-clock` is used")
+          (is (str/starts-with? (:pg-version app-res) "PostgreSQL 17.0")
+              "A PostgreSQL version specified in `embedded-pg` is used")
+          (is (= (stubbed-supply) (:supplement app-res))
+              "A supplement specified by a `stubbed-supply` fn is used")))
 
       (finally
         (testing "The app is successfully shutdown"

@@ -3,14 +3,14 @@
             [marksto.example.logic.impl.db-ops :as db-ops]
             [marksto.example.timepiece.interface :as timepiece]))
 
-;; NB: To keep this example app minimalistic we just query a PostgreSQL version
-;;     and return the current timestamp at the time of querying.
-
 (def default-clock (jt/system-clock "UTC"))
 
 (defn do-something!
-  [{:keys [db clock] :as _ctx}]
-  {:pre [(some? db)]}
-  (let [current-ts (timepiece/now (or clock default-clock))]
+  [{:keys [system supply clock] :as _ctx}]
+  {:pre [(some? (:db system)) (fn? supply)]}
+  (let [current-ts (timepiece/now (or clock default-clock))
+        pg-version (db-ops/query-pg-version (:db system))
+        supplement (supply (inc (rand-int 3)))]
     {:current-ts current-ts
-     :pg-version (db-ops/query-pg-version db)}))
+     :pg-version pg-version
+     :supplement supplement}))

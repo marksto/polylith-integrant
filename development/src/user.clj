@@ -62,28 +62,38 @@
   (system) ;=> #:marksto.example.app.system{:db ...}
 
   ;; 3. Getting a particular component (key)
-  (def db (:marksto.example.app.system/db (system)))
+  (:marksto.example.app.system/db (system)) ;=> {:datasource ...}
 
-  ;; 4. Checking that our application logic works
-  (logic/do-something! {:db db}) ;=> {:pg-version ...}
-
-  ;; 5. Restarting the running system
+  ;; 4. Restarting the running system
   ;;    See the logs:
   ;;    - user:326 - Starting system with config: ...
   ;;    - db:326 - Closing JDBC DataSource
   ;;    - db:326 - Making JDBC DataSource
   (start-app-system!) ;=> :initiated
 
-  ;; 6. Reloading source files and restarting the system in one go
+  ;; 5. Reloading source files and restarting the system in one go
   ;;    See the logs:
   ;;    - db:326 - Closing JDBC DataSource
-  ;;    - :reloading (marksto.example.app.system.*** marksto.example.app.config marksto.example.app.core)
+  ;;    - :reloading (marksto.example.app.system.db marksto.example.app.config marksto.example.app.core)
   ;;    - user:326 - Starting system with config: ...
   ;;    - db:326 - Making JDBC DataSource
   (ir/reset) ;=> :resumed
 
-  ;; 7. Stopping the running system
+  ;; 6. Stopping the running system
   ;;    See the logs:
   ;;    - db:326 - Closing JDBC DataSource
   (stop-app-system!) ;=> :halted
+  .)
+
+
+;;;; App Logic
+
+(defn check-out! []
+  (let [db (:marksto.example.app.system/db (system))]
+    (logic/do-something! {:system {:db db}
+                          :supply (constantly "Hello!")})))
+
+(comment
+  ;; Checking that our application logic works
+  (check-out!) ;=> {:current-ts ... :pg-version ... :supplement "Hello!"}
   .)

@@ -1,0 +1,4 @@
+{:paths   ["src"]
+ :deps    {talltale/talltale {:mvn/version "0.5.14"}}
+ :aliases {:test {:extra-paths ["test"]
+                  :extra-deps  {}}}}

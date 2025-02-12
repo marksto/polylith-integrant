@@ -7,7 +7,8 @@
 
    Returns a map with the following keys:
    - `:current-ts` — the current timestamp;
-   - `:pg-version` — the PostgreSQL DBMS version."
-  {:arglists '([{:keys [db ?clock] :as ctx}])}
+   - `:pg-version` — the PostgreSQL DBMS version;
+   - `:supplement` — something supplied by `supply`."
+  {:arglists '([{:keys [system supply ?clock] :as ctx}])}
   [ctx]
   (impl/do-something! ctx))

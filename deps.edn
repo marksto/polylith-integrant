@@ -8,6 +8,7 @@
                  polylith+integrant/config                  {:local/root "components/config"}
                  polylith+integrant/embedded-pg             {:local/root "components/embedded-pg"}
                  polylith+integrant/logic                   {:local/root "components/logic"}
+                 polylith+integrant/supplier                {:local/root "components/supplier"}
                  polylith+integrant/timepiece               {:local/root "components/timepiece"}
 
                  ;; Clojure
@@ -31,6 +32,7 @@
                  "components/config/test-resources"
                  "components/embedded-pg/test"
                  "components/logic/test"
+                 "components/supplier/test"
                  "components/timepiece/test"]}
 
   :run/test

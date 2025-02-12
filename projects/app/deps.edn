@@ -4,6 +4,7 @@
          polylith+integrant/app                     {:local/root "../../bases/app"}
          polylith+integrant/config                  {:local/root "../../components/config"}
          polylith+integrant/logic                   {:local/root "../../components/logic"}
+         polylith+integrant/supplier                {:local/root "../../components/supplier"}
          polylith+integrant/timepiece               {:local/root "../../components/timepiece"}
 
          ;; Clojure
